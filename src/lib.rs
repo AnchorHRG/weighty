@@ -70,9 +70,20 @@ pub fn get_all_scales() -> Vec<Box<dyn ScaleDriver>> {
     let api = HidApi::new().expect("Couldn't aquire the HID API???");
     api.device_list()
         .filter_map(|info| {
+            println!("Checking device: {:?}", info);
             let vendor_id = info.vendor_id();
             let product_id = info.product_id();
-            info.open_device(&api).ok().and_then(|dev| make_driver(vendor_id, product_id, dev))
+            println!("Device vendor_id: {}, product_id: {}", vendor_id, product_id);
+            match info.open_device(&api) {
+                Ok(dev) => {
+                    println!("Successfully opened device");
+                    make_driver(vendor_id, product_id, dev)
+                }
+                Err(e) => {
+                    println!("Failed to open device: {:?}", e);
+                    None
+                }
+            }
         })
         .collect()
 }
@@ -89,6 +100,7 @@ pub fn get_scales_by_usb_id(vendor_id: u16, product_id: u16) -> Vec<Box<dyn Scal
             let vid = info.vendor_id();
             let pid = info.product_id();
             if vid != vendor_id || pid != product_id {
+                println!("NONE");
                 return None;
             }
             info.open_device(&api).ok().and_then(|dev| make_driver(vendor_id, product_id, dev))

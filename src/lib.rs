@@ -49,7 +49,7 @@ pub type Result<T> = std::result::Result<T, HidScaleError>;
 
 /// A ScaleDriver takes care of decoding and making sense of the raw bytes
 /// coming from the HID scale.
-pub trait ScaleDriver {
+pub trait ScaleDriver: Send {
     #[cfg(feature = "units")]
     /// Returns the amount of force (weight) currently bearing on the scale.
     fn read(&self) -> Result<Force>;

@@ -30,17 +30,13 @@ struct DymoS100 {
 
 // 00 03 04 0B FF 31 00 end
 fn parse_buffer(buf: &[u8]) -> Result<DymoUnit> {
-    println!("{:?}", buf);
     // I've seen situations where there's a 0 byte prepended, not sure why, but
     // 3 is a reliable beginning byte (AFAICT).
     let offset = buf.iter().take_while(|b| **b != 3).count();
-    println!("OFFSET: {}", offset);
     let exponent = buf[offset + 3] as i8;
     let scalar = 10.0_f64.powi(exponent as i32);
     let value = u16::from_le_bytes([buf[offset + 4], buf[offset + 5]]) as f64;
     let unit_code = buf[offset + 2];
-    println!("VAL: {}, SCALAR: {}", value, scalar);
-    println!("UNIT CODE: {} --- VAL * SCALAR: {}", unit_code, value * scalar);
 
     // All of these magic numbers were found by playing with hardware, no telling.
     match buf[offset + 1] {

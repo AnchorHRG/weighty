@@ -19,7 +19,7 @@ fn main() {
 
     loop {
         if all_scales.len() > 0 {
-            for scale in all_scales {
+            for scale in &all_scales {
                 pretty_print_force(scale.read().unwrap());
             }
         } else {
@@ -27,6 +27,6 @@ fn main() {
                 "No scales found.  Are you sure it's plugged in, on, and something you have access to?"
             );
         }
-        sleep(Duration::from_millis(1000.0));
+        sleep(Duration::from_millis(1000));
     }
 }

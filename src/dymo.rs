@@ -51,8 +51,14 @@ fn parse_buffer(buf: &[u8]) -> Result<DymoUnit> {
 impl DymoS100 {
     fn read_raw(&self) -> Result<DymoUnit> {
         let mut buf = [0; 128];
+
+        let timer = std::time::Instant::now();
+
         match self.device.read(&mut buf) {
-            Ok(count) if count >= 6 => parse_buffer(&buf),
+            Ok(count) if count >= 6 => {
+                println!("ELAPSED: {}", timer.elapsed().as_millis());
+                parse_buffer(&buf)
+            }
             Ok(_) => Err(HidScaleError::NotEnoughData),
             Err(e) => Err(HidScaleError::CantReadDueTo(format!("{:?}", e))),
         }
